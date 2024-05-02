@@ -18,8 +18,7 @@ const placeControllers = {
 
     createPlace : async (req , res) =>{
         let place
-        let error = null
-
+        
         const {name,address,photo,date,occupancy} = req.body.data
 
         try {
@@ -31,11 +30,13 @@ const placeControllers = {
                 occupancy:occupancy,
             }).save()
         } catch (error){
+            console.error(error); // Imprime el error en la consola para debug
             res.status(400).json({
                 response: 'ERROR',
                 success: false,
-                error: error.message});
-        } console.log(error);
+                error: error.message
+            })
+        } 
     } 
 }
 module.exports = placeControllers

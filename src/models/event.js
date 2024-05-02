@@ -12,5 +12,4 @@ const eventSchema = new mongoose.Schema({
 })
 
 const Event = mongoose.model('events', eventSchema)
-
 module.exports = Event

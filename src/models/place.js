@@ -9,5 +9,4 @@ const placeSchema = new mongoose.Schema({
 })
 
 const Place = mongoose.model('places', placeSchema)
-
 module.exports = Place
