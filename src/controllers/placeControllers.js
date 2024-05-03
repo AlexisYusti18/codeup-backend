@@ -30,7 +30,7 @@ const placeControllers = {
                 occupancy:occupancy,
             }).save()
         } catch (error){
-            console.error(error); // Imprime el error en la consola para debug
+            console.error(error); 
             res.status(400).json({
                 response: 'ERROR',
                 success: false,
