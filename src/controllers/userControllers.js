@@ -176,6 +176,31 @@ logIn: async (req, res)=>{
         })
     }
     
+},
+verifyToken: async (req,res)=>{
+    if(req.user) {
+        res.json({
+            success:true,
+            response:{
+                id:req.user._id,
+                name: userExists.name,
+                lastName: userExists.lastName,
+                photo: userExists.photo,
+                email: userExists.email,
+                age: userExists.age,
+                genre:userExists.genre,
+                events:userExists.events,
+                from:'token'
+            },
+            message: 'Welcome Back' +' '+req.user.name + req.user.lastName
+        })
+    }
+    else {
+        res.json({
+            success: false,
+            message: 'Please do LOGIN again' //Por favor realize nuevamente LOGIN
+        })
+    }
 }
 }
 module.exports= userControllers
