@@ -5,8 +5,9 @@ const verification = require('./verification')
 const jwt = require('jsonwebtoken')//REQUIERO JWT
 
 const userControllers ={
+    
     signUp:async (req,res)=>{
-        let {name,lastName,email,password,country,imageUser,role,from}= req.body.userData
+        let {name,lastName,photo,email,password,age,genre,events,role}= req.body.userData
 
         try{
            const userExists = await User.findOne({email})
@@ -25,8 +26,7 @@ const userControllers ={
                     userExists.from.push(from)
                     userExists.password.push(passwordHash)
     
-
-                    if(from === "singUp"){
+                     if(from === "singUp"){
                         userExists.uniqueString= crypto.randomBytes(15).toString('hex')
                         await userExists.save()
                         await verification(email, userExists.uniqueString) 
@@ -54,13 +54,15 @@ const userControllers ={
                         const newUser= await new User({
                             name,
                             lastName,
-                            country,
-                            imageUser,
+                            photo,
                             email,
+                            password:[passwordHash],
+                            age,
+                            genre,
+                            events,
                             role,
                             userVerification:false,
                             uniqueString:uniqueString,
-                            password:[passwordHash],
                             from : [from]
 
                         })
@@ -95,7 +97,7 @@ const userControllers ={
 
     
 logIn: async (req, res)=>{
-    const {email, password, from}= req.body.logInUser
+    const {email, password}= req.body.logInUser
     try{
         const userExists=await User.findOne({email})
         //console.log(userExists);
@@ -108,17 +110,17 @@ logIn: async (req, res)=>{
                     id:userExists._id,
                     name: userExists.name,
                     lastName: userExists.lastName,
+                    photo: userExists.photo,
                     email: userExists.email,
-                    imageUser: userExists.imageUser,
-                    country: userExists.country,
-                    from:from
+                    age:userExists.age,
+                    genre:userExists.genre,
+                    events:userExists.events,
                 }
                 await userExists.save()
                 const token= jwt.sign({...userData}, process.env.SECRET_KEY, {expiresIn:60*60*24})
                 //console.log('token arriba'+ token);
                 res.json({
                     success:true,
-                    from:from,
                     response:{token,userData},
                     message: 'WELCOME BACK' + userData.name + userData.lastName
                 })
@@ -126,7 +128,6 @@ logIn: async (req, res)=>{
             } else {
                 res.json({
                     success: false,
-                    from:from,
                     message:'no register with' + from
                 })
             }
@@ -140,31 +141,29 @@ logIn: async (req, res)=>{
                         id:userExists._id,
                         name: userExists.name,
                         lastName: userExists.lastName,
+                        photo: userExists.photo,
                         email: userExists.email,
-                        imageUser: userExists.imageUser,
-                        country: userExists.country,
-                        from:from
+                        age: userExists.age,
+                        genre:userExists.genre,
+                        events:userExists.events,
                     }
                     await userExists.save()
                     const token= jwt.sign({...userData}, process.env.SECRET_KEY, {expiresIn:60*60*24})
                     //console.log(token);
                     res.json({
                         success:true,
-                        from:from,
                         response:{token, userData},
                         message:'WELCOME' + userData.name + userData.lastName
                     })
                 }else {
                     res.json({
                         success:false,
-                        from:from,
                         message:'verify email'
                     })
                 }
             } else{
                 res.json({
                     success:false,
-                    from:from,
                     message:'the password or the email does not match, verify the data'
                 })
         }
@@ -177,54 +176,6 @@ logIn: async (req, res)=>{
         })
     }
     
-},
-logOut: async (req, res) => {
-    const email = req.body.closeUser
-    const user = await User.findOne({ email })
-    await user.save()
-    res.json({
-      success: true,
-      message: 'Come back soon'
-    })
-  },
-
-        verifyEmail: async(req, res)=>{
-            const {uniqueString} = req.params
-            const user= await User.findOne({uniqueString: uniqueString})
-
-            if(user) {
-                user.userVerification= true
-                await user.save()
-                res.redirect("http://localhost:3000/logIn")
-            }
-            else {res.json({
-                success: false,
-                message: 'email no confirmed'
-            })}
-        },
-
-        verifyToken: async (req,res)=>{
-            if(req.user) {
-                res.json({
-                    success:true,
-                    response:{
-                        id:req.user._id,
-                        name:req.user.name ,
-                        lastName: req.user.lastName,
-                        email: req.user.email,
-                        imageUser: req.user.imageUser,
-                        country:req.user.country,
-                        from:'token'
-                    },
-                    message: 'Welcome Back' +' '+req.user.name + req.user.lastName
-                })
-            }
-            else {
-                res.json({
-                    success: false,
-                    message: 'Please do LOGIN again' //Por favor realize nuevamente LOGIN
-                })
-            }
-        }
+}
 }
 module.exports= userControllers
