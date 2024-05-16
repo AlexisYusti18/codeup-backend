@@ -17,18 +17,23 @@ const placeControllers = {
     } , 
 
     createPlace : async (req , res) =>{
-        let place
-        
+       
         const {name,address,photo,date,occupancy} = req.body.data
 
         try {
-            place = await new Place({
+            const place = new Place({
                 name:name,
                 address:address,
                 photo:photo,
                 date:date,
                 occupancy:occupancy,
-            }).save()
+            })
+                await place.save()
+                res.status(201).json({
+                    response: 'place created',
+                    success: true,
+                    place,
+                });
         } catch (error){
             console.error(error); 
             res.status(400).json({

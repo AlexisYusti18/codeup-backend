@@ -198,18 +198,27 @@ logOut: async (req, res) => {
   },
 
         verifyEmail: async(req, res)=>{
-            const {uniqueString} = req.params
-            const user= await User.findOne({uniqueString: uniqueString})
+            const { uniqueString } = req.params;
+                try {
+                    const user = await User.findOne({ uniqueString: uniqueString });
 
-            if(user) {
-                user.userVerification= true
-                await user.save()
-                res.redirect("http://localhost:4000/login")
-            }
-            else {res.json({
-                success: false,
-                message: 'email no confirmed'
-            })}
+                    if (user) {
+                        user.userVerification = true;
+                        await user.save();
+                        res.redirect("http://localhost:4000/logIn");
+                    } else {
+                        res.json({
+                            success: false,
+                            message: 'email not confirmed'
+                        });
+                    }
+                }           catch (error) {
+                    console.error('Error verifying email:', error);
+                    res.status(500).json({
+                        success: false,
+                        message: 'internal server error'
+                    });
+                }
         },
 
         verifyToken: async (req,res)=>{

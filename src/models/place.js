@@ -4,7 +4,7 @@ const placeSchema = new mongoose.Schema({
     name:{type:String, required:true},
     address:{type:String, required:true},
     photo:{type:String},
-    date:[{type:mongoose.Types.ObjectId, ref:"event"}],
+    date:[{type:mongoose.Types.ObjectId, ref:"events"}],
     occupancy:{type:Number, required:true}
 })
 
